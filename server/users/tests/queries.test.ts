@@ -3,18 +3,28 @@ import {
   JERSEY_DEVIL_USER_ID,
   ZODIAC_KILLER_USER_ID,
 } from "test/data/auth";
+import {
+  TWISTED_MINDS_REALM_EXTERNAL_ID,
+  UWU_REALM_EXTERNAL_ID,
+} from "test/data/realms";
 import { getUserRoles, getUserRolesByBoard } from "../queries";
 
 import { GORE_BOARD_ID } from "test/data/boards";
 
 describe("Tests user queries", () => {
   test("returns an empty array if the user has no roles in the current realm", async () => {
-    const roles = await getUserRoles({ firebaseId: JERSEY_DEVIL_USER_ID });
+    const roles = await getUserRoles({
+      firebaseId: JERSEY_DEVIL_USER_ID,
+      realmId: TWISTED_MINDS_REALM_EXTERNAL_ID,
+    });
     expect(roles).toEqual([]);
   });
 
   test("returns all the roles a user has in the current realm", async () => {
-    const roles = await getUserRoles({ firebaseId: ZODIAC_KILLER_USER_ID });
+    const roles = await getUserRoles({
+      firebaseId: ZODIAC_KILLER_USER_ID,
+      realmId: UWU_REALM_EXTERNAL_ID,
+    });
     expect(roles).toEqual([
       {
         avatar_reference_id:
