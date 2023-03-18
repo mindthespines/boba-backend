@@ -7,11 +7,30 @@ import {
   TWISTED_MINDS_REALM_EXTERNAL_ID,
   UWU_REALM_EXTERNAL_ID,
 } from "test/data/realms";
-import { getUserRolesByBoard, getUserRolesByRealm } from "../queries";
+import {
+  getUserFromFirebaseId,
+  getUserRolesByBoard,
+  getUserRolesByRealm,
+} from "../queries";
 
 import { GORE_BOARD_ID } from "test/data/boards";
 
 describe("Tests user queries", () => {
+  test("gets user from id", async () => {
+    const user = await getUserFromFirebaseId({
+      firebaseId: JERSEY_DEVIL_USER_ID,
+    });
+
+    expect(user).toEqual({
+      avatar_reference_id: "hannibal.png",
+      created_on: null,
+      firebase_id: JERSEY_DEVIL_USER_ID,
+      id: "2",
+      invited_by: "1",
+      username: "jersey_devil_69",
+    });
+  });
+
   test("returns an empty array if the user has no roles in the current realm", async () => {
     const roles = await getUserRolesByRealm({
       firebaseId: JERSEY_DEVIL_USER_ID,

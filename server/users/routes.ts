@@ -310,7 +310,7 @@ router.get(
   ensureLoggedIn,
   withUserSettings,
   async (req, res) => {
-    res.status(200).json(aggregateByType(req.currentUser?.settings || []));
+    res.status(200).json(aggregateByType(req.currentUser!.settings || []));
   }
 );
 
@@ -318,7 +318,7 @@ router.get(
  * @openapi
  * /users/@me/settings:
  *   patch:
- *     summary: Gets settings data for the current user.
+ *     summary: Updates settings data for the current user.
  *     operationId: updateUserSettings
  *     tags:
  *       - /users/
@@ -360,24 +360,21 @@ router.patch("/@me/settings", ensureLoggedIn, async (req, res) => {
   const { name, value } = req.body;
 
   const firebaseId = req.currentUser!.uid;
+  
   try {
     await updateUserSettings({
       firebaseId,
       settingName: name,
       settingValue: value,
     });
-
-    const settings = await getUserSettings({ firebaseId });
-    await cache().hSet(
-      CacheKeys.USER_SETTINGS,
-      firebaseId,
-      stringify(settings)
-    );
-
-    res.status(200).json(aggregateByType(settings));
   } catch (e) {
     throw new Internal500Error(`Failed to update user settings. Reason: ${e}`);
   }
+
+  const settings = await getUserSettings({ firebaseId });
+  await cache().hSet(CacheKeys.USER_SETTINGS, firebaseId, stringify(settings));
+
+  res.status(200).json(aggregateByType(settings));
 });
 
 export default router;
