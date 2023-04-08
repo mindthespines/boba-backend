@@ -1,0 +1,9 @@
+components:
+  schemas:
+    Role:
+      type: object
+      properties:
+
+    UserRoles:
+      type: array
+# TODO: all of this

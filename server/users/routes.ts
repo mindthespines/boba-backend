@@ -360,7 +360,7 @@ router.patch("/@me/settings", ensureLoggedIn, async (req, res) => {
   const { name, value } = req.body;
 
   const firebaseId = req.currentUser!.uid;
-  
+
   try {
     await updateUserSettings({
       firebaseId,
@@ -375,6 +375,37 @@ router.patch("/@me/settings", ensureLoggedIn, async (req, res) => {
   await cache().hSet(CacheKeys.USER_SETTINGS, firebaseId, stringify(settings));
 
   res.status(200).json(aggregateByType(settings));
+});
+
+/**
+ * @openapi
+ * /users/@me/realms/:realmId/roles:
+ *   get:
+ *     summary: Gets a users roles in a given realm
+ *     operationId: ??????
+ *     tags:
+ *       - /users/
+ *     security:
+ *       - firebase: []
+ *     responses:
+ *       401:
+ *         description: User was not found in request that requires authentication.
+ *       200:
+ *         description: The user's roles in a given realm
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/UserRoles"
+ *             examples:
+ *               existing:
+ *                 $ref: '#/components/examples/UserRolesResponse'
+ */
+router.get("/@me/realms/:realmId/roles", ensureLoggedIn, async (req, res) => {
+  const { realmId } = req.params;
+  const firebaseId = req.currentUser!.uid;
+
+  const roles = await getUserRolesByRealm({ firebaseId, realmId });
+  res.status(200).json(roles);
 });
 
 export default router;
