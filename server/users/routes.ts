@@ -4,6 +4,7 @@ import { ensureLoggedIn, withUserSettings } from "handlers/auth";
 import {
   getBobadexIdentities,
   getUserFromFirebaseId,
+  getUserRolesByRealm,
   getUserSettings,
   updateUserData,
   updateUserSettings,
@@ -403,10 +404,6 @@ router.patch("/@me/settings", ensureLoggedIn, async (req, res) => {
 router.get("/@me/realms/:realmId/roles", ensureLoggedIn, async (req, res) => {
   const { realmId } = req.params;
   const firebaseId = req.currentUser!.uid;
-
-  async function getUserRolesByRealm({ firebaseId, realmId }: { firebaseId: string, realmId: string }) {
-    console.log({ firebaseId, realmId });
-  }
 
   const roles = await getUserRolesByRealm({ firebaseId, realmId });
   res.status(200).json(roles);
