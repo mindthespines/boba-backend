@@ -427,14 +427,16 @@ interface UserRole {
   avatar: string;
   color: string;
   description: string;
-  permissions: {
-    boardPermissions: string[];
-    postPermissions: string[];
-    threadPermissions: string[];
-    realmPermissions: string[];
-  };
+  permissions: RolePermissions;
   boards: string[];
   accessory: string | null;
+}
+
+interface RolePermissions {
+  boardPermissions: string[];
+  postPermissions: string[];
+  threadPermissions: string[];
+  realmPermissions: string[];
 }
 
 function transformRole(role: DbRole): UserRole {
@@ -446,13 +448,52 @@ function transformRole(role: DbRole): UserRole {
     description: role.description,
     boards: role.board_ids,
     accessory: role.accessory_external_id,
-    permissions: {
-      boardPermissions: [],
-      postPermissions: [],
-      threadPermissions: [],
-      realmPermissions: [],
-    },
+    permissions: transformPermissions(role.permissions),
   };
+}
+
+// sample permissions output:
+// {edit_board_details,post_as_role,edit_category_tags,edit_content_notices}
+// {all}
+// TODO: see if there's a permissions enum floating around to use
+function transformPermissions(dbPermissions: string): RolePermissions {
+  const permissions: RolePermissions = {
+    boardPermissions: [],
+    postPermissions: [],
+    threadPermissions: [],
+    realmPermissions: [],
+  };
+
+  if (dbPermissions === "{all}") {
+    // apply every permission and return permissions
+    permissions.boardPermissions = ["edit_board_details"];
+    permissions.postPermissions = [
+      "edit_content",
+      "edit_whisper_tags",
+      "edit_category_tags",
+      "edit_index_tags",
+      "edit_content_notices",
+      // TODO: see if post_as_role should also be here
+    ];
+    permissions.threadPermissions = ["move_thread"];
+    permissions.realmPermissions = [
+      "create_realm_invite",
+      "post_on_realm",
+      "comment_on_realm",
+      "create_thread_on_realm",
+      "access_locked_boards_on_realm",
+    ];
+    return permissions;
+  }
+
+  const trimmedAndSplitPermissions = dbPermissions
+    .replace("{", "")
+    .replace("}", "")
+    .split(",");
+
+  // TODO: go through array of trimmedAndSplitPermissions and stick each in its proper category, then return permissions
+
+  return permissions;
 }
 
 export default router;
