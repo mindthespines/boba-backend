@@ -21,7 +21,7 @@ describe("Tests users/@me/bobadex endpoint", () => {
     expect(res.status).toBe(401);
   });
 
-  xtest("returns the logged in user's roles (user with no roles)", async () => {
+  xtest("returns the logged in user's roles on the given realm (user with no roles)", async () => {
     setLoggedInUser(JERSEY_DEVIL_USER_ID);
     const res = await request(server.app).get(
       `/@me/realms/${TWISTED_MINDS_REALM_EXTERNAL_ID}/roles`
@@ -30,7 +30,48 @@ describe("Tests users/@me/bobadex endpoint", () => {
     expect(res.body).toEqual({ roles: [] });
   });
 
-  xtest("returns the logged in user's roles (user with a role)", async () => {
+  xtest("returns the logged in user's roles (user with one role)", async () => {
+    setLoggedInUser(BOBATAN_USER_ID);
+    const res = await request(server.app).get(
+      `/@me/realms/${UWU_REALM_EXTERNAL_ID}/roles`
+    );
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({
+      roles: [
+        {
+          id: "70485a1e-4ce9-4064-bd87-440e16b2f219",
+          name: "The Memester",
+          avatar:
+            "https://firebasestorage.googleapis.com/v0/b/bobaboard-fb.appspot.com/o/images%2Fbobaland%2Fc26e8ce9-a547-4ff4-9486-7a2faca4d873%2F01af97fa-e240-4002-81fb-7abec9ee984b?alt=media&token=ac14effe-a788-47ae-b3b8-cbb3d8ad8f94",
+          color: "blue",
+          description: "A role for the real memers.",
+          permissions: {
+            // TODO: this role has "all" permissions - I don't know if it's actually ALL all; figure this out and update
+            boardPermissions: ["edit_board_details"],
+            postPermissions: [
+              "edit_content",
+              "edit_whisper_tags",
+              "edit_category_tags",
+              "edit_index_tags",
+              "edit_content_notices",
+            ],
+            threadPermissions: ["move_thread"],
+            realmPermissions: [
+              "create_realm_invite",
+              "post_on_realm",
+              "comment_on_realm",
+              "create_thread_on_realm",
+              "access_locked_boards_on_realm",
+            ],
+          },
+          boards: ["0e0d1ee6-f996-4415-89c1-c9dc1fe991dc"],
+          accessory: null,
+        },
+      ],
+    });
+  });
+
+  xtest("returns the logged in user's roles (user with multiple roles", async () => {
     setLoggedInUser(BOBATAN_USER_ID);
     const res = await request(server.app).get(
       `/@me/realms/${UWU_REALM_EXTERNAL_ID}/roles`
