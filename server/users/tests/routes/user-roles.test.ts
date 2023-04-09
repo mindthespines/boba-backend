@@ -1,5 +1,6 @@
 import { BOBATAN_USER_ID, JERSEY_DEVIL_USER_ID } from "test/data/auth";
 import {
+  CROWN_ACCESSORY_EXTERNAL_ID,
   GOREMASTER_ROLE_EXTERNAL_ID,
   MEMESTER_ROLE_EXTERNAL_ID,
   OWNER_ROLE_EXTERNAL_ID,
@@ -17,7 +18,7 @@ import router from "../../routes";
 jest.mock("server/cache");
 jest.mock("handlers/auth");
 
-describe("Tests users/@me/bobadex endpoint", () => {
+describe("Tests users/@me/realms/:realmId/roles endpoint", () => {
   const server = startTestServer(router);
 
   test("prevents unauthorized access to the @me user roles endpoint", async () => {
@@ -80,7 +81,7 @@ describe("Tests users/@me/bobadex endpoint", () => {
   test("returns the logged in user's roles (user with multiple roles", async () => {
     setLoggedInUser(BOBATAN_USER_ID);
     const res = await request(server.app).get(
-      `/@me/realms/${UWU_REALM_EXTERNAL_ID}/roles`
+      `/@me/realms/${TWISTED_MINDS_REALM_EXTERNAL_ID}/roles`
     );
     expect(res.status).toBe(200);
     expect(res.body).toEqual({
@@ -120,6 +121,8 @@ describe("Tests users/@me/bobadex endpoint", () => {
             threadPermissions: ["move_thread"],
             realmPermissions: ["create_realm_invite"],
           },
+          boards: [],
+          accessory: CROWN_ACCESSORY_EXTERNAL_ID
         },
       ],
     });

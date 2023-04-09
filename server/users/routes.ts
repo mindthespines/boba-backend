@@ -406,7 +406,53 @@ router.get("/@me/realms/:realmId/roles", ensureLoggedIn, async (req, res) => {
   const firebaseId = req.currentUser!.uid;
 
   const roles = await getUserRolesByRealm({ firebaseId, realmId });
-  res.status(200).json(roles);
+  const transformedRoles = { roles: roles.map(transformRole) };
+  res.status(200).json(transformedRoles);
 });
+
+interface DbRole {
+  id: string;
+  name: string;
+  avatar_reference_id: string;
+  color: string;
+  description: string;
+  permissions: string;
+  board_ids: string[];
+  accessory_external_id: string;
+}
+
+interface UserRole {
+  id: string;
+  name: string;
+  avatar: string;
+  color: string;
+  description: string;
+  permissions: {
+    boardPermissions: string[];
+    postPermissions: string[];
+    threadPermissions: string[];
+    realmPermissions: string[];
+  };
+  boards: string[];
+  accessory: string | null;
+}
+
+function transformRole(role: DbRole): UserRole {
+  return {
+    id: role.id,
+    name: role.name,
+    avatar: role.avatar_reference_id,
+    color: role.color,
+    description: role.description,
+    boards: role.board_ids,
+    accessory: role.accessory_external_id,
+    permissions: {
+      boardPermissions: [],
+      postPermissions: [],
+      threadPermissions: [],
+      realmPermissions: [],
+    },
+  };
+}
 
 export default router;
