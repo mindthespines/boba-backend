@@ -61,6 +61,7 @@ describe("Tests users/@me/realms/:realmId/roles endpoint", () => {
               "edit_category_tags",
               "edit_index_tags",
               "edit_content_notices",
+              // TODO: see if post_as_role should also be here
             ],
             threadPermissions: ["move_thread"],
             realmPermissions: [
